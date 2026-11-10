@@ -8,14 +8,31 @@ extension String{
     static let loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 }
 
+@Observable
+class AppState{
+    var metarText: String = ""
+}
+// Observable basically makes it be avaulable to the entire app
+
 struct ContentView: View {
     var body: some View {
+        @State var appState = AppState()
+        //appstate.metarText can be used to "inject" the variable
         TopContainer()
         DescriptionContainer()
+        MetarField()
         Spacer()
         VStack{
         }
+    }
+}
 
+struct MetarField: View {
+    var body: some View {
+        @State var appState = AppState()
+        VStack{
+            TextField("Type your METAR here...", text: $appState.metarText)
+        }
     }
 }
 
