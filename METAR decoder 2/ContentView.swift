@@ -16,6 +16,18 @@ class AppState{
 
 //@State var appState = AppState()
 
+struct decodedMETAR{
+    var station: String = "Unknown"
+    var time: String = "Unknown"
+    var wind: String = "Unknown"
+    var visibility: String = "Unknown"
+    var weather: [String] = []
+    var clouds: [String] = []
+    var temperature: String = "Unknown"
+    var altimeter: String = "Unknown"
+    var remarks: String = "Unknown"
+}
+
 
 struct ContentView: View {
     @State var appState = AppState()
@@ -40,11 +52,15 @@ struct MetarField: View {
                 .multilineTextAlignment(.center)
                 //.background()
                 .cornerRadius(15)
-                .dynamicTypeSize(.xxLarge)
+                .frame(width: 400 , height: 37)
+                .dynamicTypeSize(.accessibility1)
                 .glassEffect(.clear)
             Button(action: {print("Current METAR: ", appState.metarText)}){
                 Text("Convert")
-                    .frame(width: 100, height: 15)
+                    .bold()
+                    .dynamicTypeSize(.xxLarge)
+                    .fontDesign(.rounded)
+                    .frame(width: 100, height: 30)
                     .glassEffect(.clear)
                     .padding()
             }
