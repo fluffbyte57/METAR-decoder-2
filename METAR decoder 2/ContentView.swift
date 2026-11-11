@@ -32,6 +32,17 @@ struct MetarField: View {
         @State var appState = AppState()
         VStack{
             TextField("Type your METAR here...", text: $appState.metarText)
+                .multilineTextAlignment(.center)
+                //.background()
+                .cornerRadius(15)
+                .dynamicTypeSize(.xxLarge)
+                .glassEffect(.clear)
+            Button(action: {print($appState.metarText)}){
+                Text("Convert")
+                    .frame(width: 100, height: 15)
+                    .glassEffect(.clear)
+                    .padding()
+            }
         }
     }
 }
