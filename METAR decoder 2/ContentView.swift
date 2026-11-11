@@ -22,7 +22,7 @@ struct ContentView: View {
     
     var body: some View {
         //appstate.metarText can be used to "inject" the variable
-        TopContainer()
+        TopContainer(appState: appState)
         DescriptionContainer()
         MetarField(appState: appState)
         Spacer()
@@ -53,6 +53,9 @@ struct MetarField: View {
 }
 
 struct TopContainer: View{
+    @Bindable var appState = AppState()
+    @State private var showingSettings = false
+    
     var body: some View {
         HStack{
             Button(action: {print("pressed lightDark switch")}){
@@ -62,14 +65,17 @@ struct TopContainer: View{
             }
             Text("METAR Decoder")
                 .padding()
-                .dynamicTypeSize(.xxLarge)
+                .dynamicTypeSize(.xxxLarge)
                 .fontDesign(.monospaced)
                 .lineLimit(1)
                 //.truncationMode(.middle)
-            Button(action: {print("pressed settings")}){
+            Button(action: {showingSettings = true}){
                 Image(systemName: "gearshape.fill")
                     .dynamicTypeSize(.large)
                     .padding()
+            }
+            .sheet(isPresented: $showingSettings){
+                appSettings()
             }
 
         }
