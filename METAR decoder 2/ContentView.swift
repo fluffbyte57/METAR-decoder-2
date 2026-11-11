@@ -14,13 +14,17 @@ class AppState{
 }
 // Observable basically makes it be avaulable to the entire app
 
+//@State var appState = AppState()
+
+
 struct ContentView: View {
+    @State var appState = AppState()
+    
     var body: some View {
-        @State var appState = AppState()
         //appstate.metarText can be used to "inject" the variable
         TopContainer()
         DescriptionContainer()
-        MetarField()
+        MetarField(appState: appState)
         Spacer()
         VStack{
         }
@@ -28,8 +32,9 @@ struct ContentView: View {
 }
 
 struct MetarField: View {
+    @Bindable var appState = AppState()
+
     var body: some View {
-        @State var appState = AppState()
         VStack{
             TextField("Type your METAR here...", text: $appState.metarText)
                 .multilineTextAlignment(.center)
@@ -37,7 +42,7 @@ struct MetarField: View {
                 .cornerRadius(15)
                 .dynamicTypeSize(.xxLarge)
                 .glassEffect(.clear)
-            Button(action: {print($appState.metarText)}){
+            Button(action: {print("Current METAR: ", appState.metarText)}){
                 Text("Convert")
                     .frame(width: 100, height: 15)
                     .glassEffect(.clear)
