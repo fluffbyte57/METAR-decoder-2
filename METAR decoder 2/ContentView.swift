@@ -53,12 +53,18 @@ struct MetarField: View {
 }
 
 struct TopContainer: View{
+    
+    @AppStorage("isDarkMode") private var isDarkMode = false
     @Bindable var appState = AppState()
     @State private var showingSettings = false
     
     var body: some View {
         HStack{
-            Button(action: {print("pressed lightDark switch")}){
+            Button(action: {if isDarkMode == true{
+                isDarkMode = false
+            }else if isDarkMode == false{
+                isDarkMode = true
+            }}){
                 Image(systemName: "moon.fill")
                     .dynamicTypeSize(.large)
                 .padding()
@@ -77,7 +83,7 @@ struct TopContainer: View{
             .sheet(isPresented: $showingSettings){
                 appSettings()
             }
-
+            .preferredColorScheme(isDarkMode ? .dark : .light)
         }
     }
 }
