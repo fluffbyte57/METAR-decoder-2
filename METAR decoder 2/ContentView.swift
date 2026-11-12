@@ -59,19 +59,24 @@ struct decodedField: View{
 
 struct MetarField: View {
     @Bindable var appState = AppState()
+    @FocusState var isTyping: Bool
+    @State private var currentMETAR = decodedMETAR()
+    
     var body: some View {
         var decodedMETAR = parseMETAR(appState.metarText)
+        var metarRAW = parseMETAR(appState.metarText)
 
         
         VStack{
             TextField("Type your METAR here...", text: $appState.metarText)
                 .multilineTextAlignment(.center)
+                .focused($isTyping)
             //.background()
                 .cornerRadius(15)
                 .frame(width: 400 , height: 37)
                 .dynamicTypeSize(.xSmall)
                 .glassEffect(.clear)
-            Button(action: {print("Current METAR: ", decodedMETAR)}){
+            Button(action: {isTyping = false; currentMETAR = parseMETAR(appState.metarText)}){
                 Text("Convert")
                     .bold()
                     .dynamicTypeSize(.xxLarge)
@@ -81,40 +86,43 @@ struct MetarField: View {
                     .padding()
             }
             VStack(alignment: .leading, spacing: 8){
-                Text("Airport: \(decodedMETAR.station)" )
+                Text("Airport: \(currentMETAR.station)" )
                     .dynamicTypeSize(.xxLarge)
                     .multilineTextAlignment(.center)
-                Text("Current Time: \(decodedMETAR.time)" )
+                
+                Text("Current Time: \(currentMETAR.time)" )
                     .dynamicTypeSize(.xxLarge)
                     .multilineTextAlignment(.center)
-                Text("Winds: \(decodedMETAR.wind)" )
+                
+                Text("Winds: \(currentMETAR.wind)" )
                     .dynamicTypeSize(.xxLarge)
                     .multilineTextAlignment(.center)
 
-                Text("Visibility: \(decodedMETAR.visibility)" )
+                Text("Visibility: \(currentMETAR.visibility)" )
                     .dynamicTypeSize(.xxLarge)
                     .multilineTextAlignment(.center)
 
-                Text("Weather: \(decodedMETAR.weather)" )
+                Text("Weather: \(currentMETAR.weather)" )
                     .dynamicTypeSize(.xxLarge)
                     .multilineTextAlignment(.center)
+                
                 HStack(alignment: .top, spacing: 6){
                     Text("Clouds:")
                         .dynamicTypeSize(.xxLarge)
                     
-                    Text(decodedMETAR.clouds.joined(separator: ", "))
+                    Text(currentMETAR.clouds.joined(separator: ", "))
                         .fixedSize(horizontal: false, vertical: true)
                         .dynamicTypeSize(.xxLarge)
                 }
-                Text("Temperature: \(decodedMETAR.temperature)" )
+                Text("Temperature: \(currentMETAR.temperature)" )
                     .dynamicTypeSize(.xxLarge)
                     .multilineTextAlignment(.center)
 
-                Text("Altimeter: \(decodedMETAR.altimeter)" )
+                Text("Altimeter: \(currentMETAR.altimeter)" )
                     .dynamicTypeSize(.xxLarge)
                     .multilineTextAlignment(.center)
 
-                Text("Remarks: \(decodedMETAR.remarks)" )
+                Text("Remarks: \(currentMETAR.remarks)" )
                     .dynamicTypeSize(.xxLarge)
                     .multilineTextAlignment(.center)
 
