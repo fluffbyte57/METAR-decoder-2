@@ -10,8 +10,12 @@ extension String{
 
 @Observable
 class AppState{
-    var metarText: String = "KORD 251751Z 24015G25KT 3SM -RA BR BKN012 OVC025 14/11 A2992 RMK AO2 RAB32 SLP134"
+    var metarText: String = ""
 }
+
+
+
+
 // Observable basically makes it be avaulable to the entire app
 
 //@State var appState = AppState()
@@ -37,17 +41,27 @@ struct ContentView: View {
         TopContainer(appState: appState)
         DescriptionContainer()
         MetarField(appState: appState)
+        decodedField()
         Spacer()
         VStack{
         }
     }
 }
 
+struct decodedField: View{
+    @Bindable var appState = AppState()
+    var body: some View{
+        var decodedMETAR = parseMETAR(appState.metarText)
+
+        
+    }
+}
+
 struct MetarField: View {
     @Bindable var appState = AppState()
     var body: some View {
-        
         var decodedMETAR = parseMETAR(appState.metarText)
+
         
         VStack{
             TextField("Type your METAR here...", text: $appState.metarText)
@@ -55,7 +69,7 @@ struct MetarField: View {
             //.background()
                 .cornerRadius(15)
                 .frame(width: 400 , height: 37)
-                .dynamicTypeSize(.accessibility1)
+                .dynamicTypeSize(.xSmall)
                 .glassEffect(.clear)
             Button(action: {print("Current METAR: ", decodedMETAR)}){
                 Text("Convert")
@@ -66,84 +80,123 @@ struct MetarField: View {
                     .glassEffect(.clear)
                     .padding()
             }
+            VStack(alignment: .leading, spacing: 8){
+                Text("Airport: \(decodedMETAR.station)" )
+                    .dynamicTypeSize(.xxLarge)
+                    .multilineTextAlignment(.center)
+                Text("Current Time: \(decodedMETAR.time)" )
+                    .dynamicTypeSize(.xxLarge)
+                    .multilineTextAlignment(.center)
+                Text("Winds: \(decodedMETAR.wind)" )
+                    .dynamicTypeSize(.xxLarge)
+                    .multilineTextAlignment(.center)
+
+                Text("Visibility: \(decodedMETAR.visibility)" )
+                    .dynamicTypeSize(.xxLarge)
+                    .multilineTextAlignment(.center)
+
+                Text("Weather: \(decodedMETAR.weather)" )
+                    .dynamicTypeSize(.xxLarge)
+                    .multilineTextAlignment(.center)
+                HStack(alignment: .top, spacing: 6){
+                    Text("Clouds:")
+                        .dynamicTypeSize(.xxLarge)
+                    
+                    Text(decodedMETAR.clouds.joined(separator: ", "))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .dynamicTypeSize(.xxLarge)
+                }
+                Text("Temperature: \(decodedMETAR.temperature)" )
+                    .dynamicTypeSize(.xxLarge)
+                    .multilineTextAlignment(.center)
+
+                Text("Altimeter: \(decodedMETAR.altimeter)" )
+                    .dynamicTypeSize(.xxLarge)
+                    .multilineTextAlignment(.center)
+
+                Text("Remarks: \(decodedMETAR.remarks)" )
+                    .dynamicTypeSize(.xxLarge)
+                    .multilineTextAlignment(.center)
+
+            }
         }
     }
-    func parseMETAR(_ rawText: String) -> decodedMETAR {
-            var result = decodedMETAR()
-            
-            // Clean up extra spaces and make everything uppercase
-            let cleaned = rawText.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-            if cleaned.isEmpty { return result }
-            
-            // Step A: Separate Remarks ("RMK") first so it doesn't confuse the main parser
-            let mainAndRemarks = cleaned.components(separatedBy: " RMK ")
-            let mainPart = mainAndRemarks[0]
-            if mainAndRemarks.count > 1 {
-                result.remarks = mainAndRemarks[1]
-            }
-            
-            // Step B: Splice the main report into individual words (tokens)
-            let tokens = mainPart.components(separatedBy: " ")
-            
-            // Step C: Loop through every token and check its format using Regex
-            for (index, token) in tokens.enumerated() {
-                
-                // 1. Station ID: First 4-letter word (ignoring "METAR" or "SPECI")
-                if (index == 0 || index == 1), token.wholeMatch(of: /^[A-Z]{4}$/) != nil, token != "METAR", token != "SPECI" {
-                    result.station = token
-                }
-                
-                // 2. Time: 2 digits for day, 4 digits for UTC time, ending in Z (e.g., 112053Z)
-                else if let match = token.wholeMatch(of: /^(\d{2})(\d{2})(\d{2})Z$/) {
-                    result.time = "Day \(match.1) at \(match.2):\(match.3) UTC"
-                }
-                
-                // 3. Wind: 3 digits direction (or VRB), 2-3 digits speed, optional Gust, ending in KT
-                else if let match = token.wholeMatch(of: /^(\d{3}|VRB)(\d{2,3})(?:G(\d{2,3}))?KT$/) {
-                    let dir = match.1 == "VRB" ? "Variable" : "\(match.1)°"
-                    let speed = "\(Int(match.2) ?? 0) kts"
-                    if let gust = match.3 {
-                        result.wind = "\(dir) at \(speed), gusting \(Int(gust) ?? 0) kts"
-                    } else {
-                        result.wind = "\(dir) at \(speed)"
-                    }
-                }
-                
-                // 4. Visibility: Ends with SM (e.g., 10SM or 3SM)
-                else if let match = token.wholeMatch(of: /^(\d+(?:\/\d+)?)SM$/) {
-                    result.visibility = "\(match.1) statute miles"
-                }
-                
-                // 5. Sky Condition: Coverage code + 3 digits for altitude in hundreds of feet
-                else if let match = token.wholeMatch(of: /^(FEW|SCT|BKN|OVC)(\d{3})$/) {
-                    let coverNames = ["FEW": "Few", "SCT": "Scattered", "BKN": "Broken", "OVC": "Overcast"]
-                    let cover = coverNames[String(match.1)] ?? String(match.1)
-                    let altitude = (Int(match.2) ?? 0) * 100
-                    result.clouds.append("\(cover) at \(altitude) ft")
-                }
-                
-                // 6. Temp / Dew Point: Two digits (optional M for minus) separated by a slash
-                else if let match = token.wholeMatch(of: /^(M?\d{2})\/(M?\d{2})$/) {
-                    let temp = match.1.replacingOccurrences(of: "M", with: "-")
-                    let dew = match.2.replacingOccurrences(of: "M", with: "-")
-                    result.temperature = "\(temp)°C / \(dew)°C"
-                }
-                
-                // 7. Altimeter: Starts with A followed by 4 digits (e.g., A3004 -> 30.04)
-                else if let match = token.wholeMatch(of: /^A(\d{2})(\d{2})$/) {
-                    result.altimeter = "\(match.1).\(match.2) inHg"
-                }
-                
-                // 8. Basic Weather Phenomena (Rain, Snow, Mist, Fog, Thunderstorm)
-                else if token.wholeMatch(of: /^(-|\+|VC)?(DZ|RA|SN|TS|BR|FG|HZ)+$/) != nil {
-                    result.weather.append(decodeWeatherCode(token))
-                }
-            }
-            
-            return result
-        }
-    
 }
+func parseMETAR(_ rawText: String) -> decodedMETAR {
+        var result = decodedMETAR()
+        
+        // Clean up extra spaces and make everything uppercase
+        let cleaned = rawText.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        if cleaned.isEmpty { return result }
+        
+        // Step A: Separate Remarks ("RMK") first so it doesn't confuse the main parser
+        let mainAndRemarks = cleaned.components(separatedBy: " RMK ")
+        let mainPart = mainAndRemarks[0]
+        if mainAndRemarks.count > 1 {
+            result.remarks = mainAndRemarks[1]
+        }
+        
+        // Step B: Splice the main report into individual words (tokens)
+        let tokens = mainPart.components(separatedBy: " ")
+        
+        // Step C: Loop through every token and check its format using Regex
+        for (index, token) in tokens.enumerated() {
+            
+            // 1. Station ID: First 4-letter word (ignoring "METAR" or "SPECI")
+            if (index == 0 || index == 1), token.wholeMatch(of: /^[A-Z]{4}$/) != nil, token != "METAR", token != "SPECI" {
+                result.station = token
+            }
+            
+            // 2. Time: 2 digits for day, 4 digits for UTC time, ending in Z (e.g., 112053Z)
+            else if let match = token.wholeMatch(of: /^(\d{2})(\d{2})(\d{2})Z$/) {
+                result.time = "Day \(match.1) at \(match.2):\(match.3) UTC"
+            }
+            
+            // 3. Wind: 3 digits direction (or VRB), 2-3 digits speed, optional Gust, ending in KT
+            else if let match = token.wholeMatch(of: /^(\d{3}|VRB)(\d{2,3})(?:G(\d{2,3}))?KT$/) {
+                let dir = match.1 == "VRB" ? "Variable" : "\(match.1)°"
+                let speed = "\(Int(match.2) ?? 0) kts"
+                if let gust = match.3 {
+                    result.wind = "\(dir) at \(speed), gusting \(Int(gust) ?? 0) kts"
+                } else {
+                    result.wind = "\(dir) at \(speed)"
+                }
+            }
+            
+            // 4. Visibility: Ends with SM (e.g., 10SM or 3SM)
+            else if let match = token.wholeMatch(of: /^(\d+(?:\/\d+)?)SM$/) {
+                result.visibility = "\(match.1) statute miles"
+            }
+            
+            // 5. Sky Condition: Coverage code + 3 digits for altitude in hundreds of feet
+            else if let match = token.wholeMatch(of: /^(FEW|SCT|BKN|OVC)(\d{3})$/) {
+                let coverNames = ["FEW": "Few", "SCT": "Scattered", "BKN": "Broken", "OVC": "Overcast"]
+                let cover = coverNames[String(match.1)] ?? String(match.1)
+                let altitude = (Int(match.2) ?? 0) * 100
+                result.clouds.append("\(cover) at \(altitude) ft")
+            }
+            
+            // 6. Temp / Dew Point: Two digits (optional M for minus) separated by a slash
+            else if let match = token.wholeMatch(of: /^(M?\d{2})\/(M?\d{2})$/) {
+                let temp = match.1.replacingOccurrences(of: "M", with: "-")
+                let dew = match.2.replacingOccurrences(of: "M", with: "-")
+                result.temperature = "\(temp)°C / \(dew)°C"
+            }
+            
+            // 7. Altimeter: Starts with A followed by 4 digits (e.g., A3004 -> 30.04)
+            else if let match = token.wholeMatch(of: /^A(\d{2})(\d{2})$/) {
+                result.altimeter = "\(match.1).\(match.2) inHg"
+            }
+            
+            // 8. Basic Weather Phenomena (Rain, Snow, Mist, Fog, Thunderstorm)
+            else if token.wholeMatch(of: /^(-|\+|VC)?(DZ|RA|SN|TS|BR|FG|HZ)+$/) != nil {
+                result.weather.append(decodeWeatherCode(token))
+            }
+        }
+        
+        return result
+    }
+
 func decodeWeatherCode(_ code: String) -> String {
         var text = code
         text = text.replacingOccurrences(of: "-", with: "Light ")
@@ -179,7 +232,7 @@ struct TopContainer: View{
             }
             Text("METAR Decoder")
                 .padding()
-                .dynamicTypeSize(.xxxLarge)
+                .dynamicTypeSize(.accessibility1)
                 .fontDesign(.monospaced)
                 .lineLimit(1)
                 //.truncationMode(.middle)
@@ -200,6 +253,7 @@ struct DescriptionContainer: View {
     var body: some View {
         Text(verbatim: .loremIpsum)
             .fontWeight(.thin)
+            .dynamicTypeSize(.xLarge)
             .multilineTextAlignment(.center)
     }
 }
@@ -209,3 +263,4 @@ struct DescriptionContainer: View {
 #Preview {
     ContentView()
 }
+
