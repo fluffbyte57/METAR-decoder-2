@@ -43,7 +43,9 @@ struct ContentView: View {
         MetarField(appState: appState)
         decodedField()
         Spacer()
-        warningField()
+        //warningField()
+        
+        //Instead of constant warning field, make a popup on app start warning user
         Spacer()
         VStack{
         }
@@ -55,7 +57,8 @@ struct warningField: View {
         Text("⚠️ WARNING ⚠️")
             .bold()
             .dynamicTypeSize(.accessibility2)
-        Text(verbatim: .loremIpsum)
+        Text("The converter may contian errors and  it shouldn´t be used as a replacement to pilot thinking. This app is only intended for")
+        /// Warn user that app may contian errors and that it shouldn´t be a replacement to pilot thinking
             .multilineTextAlignment(.center)
     }
 }
