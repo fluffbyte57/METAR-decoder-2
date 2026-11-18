@@ -43,8 +43,20 @@ struct ContentView: View {
         MetarField(appState: appState)
         decodedField()
         Spacer()
+        warningField()
+        Spacer()
         VStack{
         }
+    }
+}
+
+struct warningField: View {
+    var body: some View {
+        Text("⚠️ WARNING ⚠️")
+            .bold()
+            .dynamicTypeSize(.accessibility2)
+        Text(verbatim: .loremIpsum)
+            .multilineTextAlignment(.center)
     }
 }
 
