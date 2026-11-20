@@ -1,6 +1,10 @@
 import SwiftUI
 import Playgrounds
 
+
+//remember add placeholder METARs for user to try out
+//keep warning label showing on FALSE during testing because its annoying af
+
 ///helloworlddd2
 ///
 ///
@@ -11,8 +15,9 @@ extension String{
 @Observable
 class AppState{
     var metarText: String = ""
+    var placeholderMETAR1: String = "METAR KMIA 202253Z 18003KT 10SM FEW030 FEW200 FEW250 26/22 A2989 RMK AO2 SLP121 T02560222 $"
+    var currentMETAR = decodedMETAR()
 }
-
 
 
 
@@ -34,7 +39,7 @@ struct decodedMETAR{
 
 
 struct ContentView: View {
-    @State var showingWarningLabel = true
+    @State var showingWarningLabel = false
     @State var appState = AppState()
     
     var body: some View {
@@ -45,7 +50,7 @@ struct ContentView: View {
         decodedField()
         Spacer()
         //warningField()
-        
+        exampleMetarField()
         //Instead of constant warning field, make a popup on app start warning user
         Spacer()
         VStack{
@@ -59,6 +64,7 @@ struct ContentView: View {
                 Text("The converter may contian errors and it should not be used as a replacement to pilot thinking. This app is only intended for educational / partial navigational use. Important details should always be double-checked")
                 /// Warn user that app may contian errors and that it shouldn´t be a replacement to pilot thinking
                     .multilineTextAlignment(.center)
+                    .dynamicTypeSize(.xxLarge)
                     .padding()
             }
             Button(action: {showingWarningLabel = false}){
@@ -77,6 +83,20 @@ struct ContentView: View {
     }
 }
 
+struct exampleMetarField: View {
+    @Bindable var appState = AppState()
+    @State var currentMETAR = decodedMETAR()
+
+    var body: some View {
+
+         VStack{
+             Button(action: {currentMETAR = parseMETAR(appState.placeholderMETAR1);              print(currentMETAR)}){
+                Text("KMIA METAR example")
+            }
+        }
+    }
+}
+
 struct decodedField: View{
     @Bindable var appState = AppState()
     var body: some View{
@@ -89,10 +109,12 @@ struct decodedField: View{
 struct MetarField: View {
     @Bindable var appState = AppState()
     @FocusState var isTyping: Bool
-    @State private var currentMETAR = decodedMETAR()
+    @State var currentMETAR = decodedMETAR()
+
     
     var body: some View {
-        var decodedMETAR = parseMETAR(appState.metarText)
+
+        var decodedMETARLOCAL = appState.currentMETAR
         var metarRAW = parseMETAR(appState.metarText)
 
         
@@ -157,6 +179,11 @@ struct MetarField: View {
 
             }
         }
+        VStack{
+            Button(action: {currentMETAR = parseMETAR(appState.placeholderMETAR1);              print(currentMETAR)}){
+               Text("KMIA METAR example")
+           }
+       }
     }
 }
 func parseMETAR(_ rawText: String) -> decodedMETAR {
