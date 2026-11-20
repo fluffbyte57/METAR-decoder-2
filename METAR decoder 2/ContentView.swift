@@ -15,7 +15,10 @@ extension String{
 @Observable
 class AppState{
     var metarText: String = ""
-    var placeholderMETAR1: String = "METAR KMIA 202253Z 18003KT 10SM FEW030 FEW200 FEW250 26/22 A2989 RMK AO2 SLP121 T02560222 $"
+    var KMIA_METAR: String = "METAR KMIA 202253Z 18003KT 10SM FEW030 FEW200 FEW250 26/22 A2989 RMK AO2 SLP121 T02560222 $"
+    var KJFK_METAR: String = "METAR KJFK 202251Z 19005KT 10SM FEW250 13/08 A3028 RMK SLP252 T01280078 $"
+    var KSDF_METAR: String = "METAR KSDF 202256Z 08005KT 10SM FEW300 18/06 A3023 RMK AO2 SLP238 T01830056 $"
+    var KLAX_METAR: String = "METAR KLAX 202253Z 25009KT 10SM FEW035 FEW080 18/03 A2996 RMK AO2 SLP146 T01780033 $"
     var currentMETAR = decodedMETAR()
 }
 
@@ -47,10 +50,7 @@ struct ContentView: View {
         TopContainer(appState: appState)
         DescriptionContainer()
         MetarField(appState: appState)
-        decodedField()
-        Spacer()
         //warningField()
-        exampleMetarField()
         //Instead of constant warning field, make a popup on app start warning user
         Spacer()
         VStack{
@@ -83,19 +83,7 @@ struct ContentView: View {
     }
 }
 
-struct exampleMetarField: View {
-    @Bindable var appState = AppState()
-    @State var currentMETAR = decodedMETAR()
 
-    var body: some View {
-
-         VStack{
-             Button(action: {currentMETAR = parseMETAR(appState.placeholderMETAR1);              print(currentMETAR)}){
-                Text("KMIA METAR example")
-            }
-        }
-    }
-}
 
 struct decodedField: View{
     @Bindable var appState = AppState()
@@ -179,11 +167,26 @@ struct MetarField: View {
 
             }
         }
+        Spacer()
+        Text("METAR examples for some airports: ")
+            .dynamicTypeSize(.xxLarge)
+            .bold()
+            .padding()
         VStack{
-            Button(action: {currentMETAR = parseMETAR(appState.placeholderMETAR1);              print(currentMETAR)}){
-               Text("KMIA METAR example")
-           }
+            Button(action: {currentMETAR = parseMETAR(appState.KMIA_METAR);              print(currentMETAR)}){
+               Text("KMIA METAR example")}
+            
+            Button(action: {currentMETAR = parseMETAR(appState.KJFK_METAR);              print(currentMETAR)}){
+                Text("KJFK METAR example")
+                }
+            Button(action: {currentMETAR = parseMETAR(appState.KSDF_METAR);              print(currentMETAR)}){
+                Text("KSDF METAR example")
+                }
+            Button(action: {currentMETAR = parseMETAR(appState.KLAX_METAR);              print(currentMETAR)}){
+                Text("KLAX METAR example")
+                }
        }
+        
     }
 }
 func parseMETAR(_ rawText: String) -> decodedMETAR {
