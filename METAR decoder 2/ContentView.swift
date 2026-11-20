@@ -34,6 +34,7 @@ struct decodedMETAR{
 
 
 struct ContentView: View {
+    @State var showingWarningLabel = true
     @State var appState = AppState()
     
     var body: some View {
@@ -49,17 +50,30 @@ struct ContentView: View {
         Spacer()
         VStack{
         }
-    }
-}
+        .sheet(isPresented: $showingWarningLabel) {
+            Spacer()
+            VStack{
+                Text("⚠️ WARNING ⚠️")
+                    .bold()
+                    .dynamicTypeSize(.accessibility2)
+                Text("The converter may contian errors and it should not be used as a replacement to pilot thinking. This app is only intended for educational / partial navigational use. Important details should always be double-checked")
+                /// Warn user that app may contian errors and that it shouldn´t be a replacement to pilot thinking
+                    .multilineTextAlignment(.center)
+                    .padding()
+            }
+            Button(action: {showingWarningLabel = false}){
+                Text("Accept")
+                    .padding()
+                    .frame(width: 100, height: 50)
+                    .glassEffect(.clear)
+                    .dynamicTypeSize(.xLarge)
+                    .bold()
+            }
+            
+            Spacer()
+            .interactiveDismissDisabled()
 
-struct warningField: View {
-    var body: some View {
-        Text("⚠️ WARNING ⚠️")
-            .bold()
-            .dynamicTypeSize(.accessibility2)
-        Text("The converter may contian errors and  it shouldn´t be used as a replacement to pilot thinking. This app is only intended for")
-        /// Warn user that app may contian errors and that it shouldn´t be a replacement to pilot thinking
-            .multilineTextAlignment(.center)
+        }
     }
 }
 
