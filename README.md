@@ -8,13 +8,12 @@ _Available Features:_
 - Dark/Light mode switching
 - Dynamic text sizing
 
-🛠️WORK IN PROGRESS🛠️
+🛠️FUTURE UPDATES🛠️
 
-- [ ] Settings Menu
-- [ ] Nicer UI
+- [ ] (Usable) Settings Menu
+- [x] Nicer UI
 - [ ] Tints for customizability
 
+<img width="301" height="700" alt="NewUI" src="https://github.com/user-attachments/assets/ddc8bbe8-91cd-444f-bb4f-4b3a595bbe98" />
 
-<img width="301" height="757" alt="ContentView2" src="https://github.com/user-attachments/assets/86122fc3-43f3-452d-b4ce-f472163c4a2d" />
-
-<img width="301" height="757" alt="ContentView" src="https://github.com/user-attachments/assets/c8167b22-5eb7-4f33-adec-99a1a84f4e8d" />
+<img width="301" height="700" alt="SettingsMenuNEW" src="https://github.com/user-attachments/assets/48650751-efe5-4826-9099-066b9c9498ac" />
