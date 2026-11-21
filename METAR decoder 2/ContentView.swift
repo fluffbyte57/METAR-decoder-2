@@ -40,14 +40,21 @@ struct decodedMETAR{
 
 
 struct ContentView: View {
-    @State var showingWarningLabel = true
+    @AppStorage("showExamples") var showExamples = false
+    @State var showingWarningLabel = false
     @State var appState = AppState()
     
     var body: some View {
         //appstate.metarText can be used to "inject" the variable
         TopContainer(appState: appState)
         DescriptionContainer()
-        MetarField(appState: appState)
+        
+        //MetarField(appState: appState)
+        newMETARfield()
+        if showExamples == true{
+            exampleField()
+
+        }
         //warningField()
         //Instead of constant warning field, make a popup on app start warning user
         Spacer()
@@ -83,95 +90,85 @@ struct ContentView: View {
 
 
 
-struct decodedField: View{
-    @Bindable var appState = AppState()
-    var body: some View{
-        var decodedMETAR = parseMETAR(appState.metarText)
-
-        
-    }
-}
-
-struct MetarField: View {
+struct newMETARfield: View{
     @Bindable var appState = AppState()
     @FocusState var isTyping: Bool
     @State var currentMETAR = decodedMETAR()
-
-    
-    var body: some View {
-
-        var decodedMETARLOCAL = appState.currentMETAR
-        var metarRAW = parseMETAR(appState.metarText)
-
-        
-        VStack{
+    var body: some View{
+        VStack(spacing: 15){
             TextField("Type your METAR here...", text: $appState.metarText)
-                .multilineTextAlignment(.center)
                 .focused($isTyping)
-            //.background()
-                .cornerRadius(15)
-                .frame(width: 400 , height: 37)
-                .dynamicTypeSize(.xSmall)
+                .textFieldStyle(.roundedBorder)
+                .frame(width: 375, height: 35)
                 .glassEffect(.clear)
-                .padding(.top)
-            Button(action: {isTyping = false; currentMETAR = parseMETAR(appState.metarText)}){
-                Text("Convert")
-                    .bold()
-                    .dynamicTypeSize(.xxLarge)
-                    .fontDesign(.rounded)
-                    .frame(width: 100, height: 30)
-                    .glassEffect(.clear)
-                    .padding()
+                //.padding(.top)
+            Button("Convert", action: {isTyping = false; currentMETAR = parseMETAR(appState.metarText)})
+                .dynamicTypeSize(.xxLarge)
+                .bold()
+                .frame(width: 100, height: 30)
+                .glassEffect(.clear)
+        }
+        VStack(alignment: .leading, spacing: 20){
+            HStack{
+                Image(systemName: "airplane")
+                Text("Airport: \(currentMETAR.station)")
+                Spacer()
             }
-            VStack(alignment: .leading, spacing: 8){
-                Text("Airport: \(currentMETAR.station)" )
-                    .dynamicTypeSize(.xxLarge)
-                    .multilineTextAlignment(.center)
-                
-                Text("Current Time: \(currentMETAR.time)" )
-                    .dynamicTypeSize(.xxLarge)
-                    .multilineTextAlignment(.center)
-                
-                Text("Winds: \(currentMETAR.wind)" )
-                    .dynamicTypeSize(.xxLarge)
-                    .multilineTextAlignment(.center)
+            HStack{
+                Image(systemName: "clock")
+                Text("Time: \(currentMETAR.time)")
+            }
+            HStack{
+                Image(systemName: "wind")
+                Text("Winds: \(currentMETAR.wind)")
+            }
+            HStack{
+                Image(systemName: "eye")
+                Text("Visibility: \(currentMETAR.visibility)")
+            }
+            HStack{
+                Image(systemName: "cloud.sun")
+                Text("Weather: \(currentMETAR.weather)")
 
-                Text("Visibility: \(currentMETAR.visibility)" )
-                    .dynamicTypeSize(.xxLarge)
-                    .multilineTextAlignment(.center)
+            }
+            HStack{
+                Image(systemName: "cloud")
+                Text("Clouds: \(currentMETAR.clouds)")
 
-                Text("Weather: \(currentMETAR.weather)" )
-                    .dynamicTypeSize(.xxLarge)
-                    .multilineTextAlignment(.center)
-                
-                HStack(alignment: .top, spacing: 6){
-                    Text("Clouds:")
-                        .dynamicTypeSize(.xxLarge)
-                    
-                    Text(currentMETAR.clouds.joined(separator: ", "))
-                        .fixedSize(horizontal: false, vertical: true)
-                        .dynamicTypeSize(.xxLarge)
-                }
-                Text("Temperature: \(currentMETAR.temperature)" )
-                    .dynamicTypeSize(.xxLarge)
-                    .multilineTextAlignment(.center)
+            }
+            HStack{
+                Image(systemName: "thermometer")
+                Text("Temperature: \(currentMETAR.temperature)")
 
-                Text("Altimeter: \(currentMETAR.altimeter)" )
-                    .dynamicTypeSize(.xxLarge)
-                    .multilineTextAlignment(.center)
+            }
+            HStack{
+                Image(systemName: "barometer")
+                Text("Altimeter: \(currentMETAR.altimeter)")
+            }
 
-                Text("Remarks: \(currentMETAR.remarks)" )
-                    .dynamicTypeSize(.xxLarge)
-                    .multilineTextAlignment(.center)
+            HStack{
+                Image(systemName: "info.circle")
+                Text("Remarks: \(currentMETAR.remarks)")
 
             }
         }
-        Spacer()
-        Text("METAR examples for some airports: ")
-            .dynamicTypeSize(.xxLarge)
-            .bold()
-            .padding()
-        VStack{
+        .padding(20)
+        .frame(width: 350, height: 400)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+        .shadow(radius: 15)
+        .padding(10)
+        
+    }
+    
+}
+
+struct exampleField: View {
+    @Bindable var appState = AppState()
+    @State var currentMETAR = decodedMETAR()
+
+    var body: some View {
+        VStack(alignment: .center, spacing: 7){
             Button(action: {currentMETAR = parseMETAR(appState.KMIA_METAR);              print(currentMETAR)}){
                 Text("KMIA METAR example")}
             
@@ -185,9 +182,9 @@ struct MetarField: View {
                 Text("KLAX METAR example")
                 }
        }
-        
     }
 }
+
 func parseMETAR(_ rawText: String) -> decodedMETAR {
         var result = decodedMETAR()
         
@@ -294,18 +291,22 @@ struct TopContainer: View{
             }}){
                 Image(systemName: "moon.fill")
                     .dynamicTypeSize(.large)
-                .padding()
+                    .padding(.top)
+                    .padding(.horizontal)
             }
             Text("METAR Decoder")
-                .padding()
+                .padding(.top)
                 .dynamicTypeSize(.accessibility1)
                 .fontDesign(.monospaced)
                 .lineLimit(1)
+                .padding(.horizontal)
+
                 //.truncationMode(.middle)
             Button(action: {showingSettings = true}){
                 Image(systemName: "gearshape.fill")
                     .dynamicTypeSize(.large)
-                    .padding()
+                    .padding(.top)
+                    .padding(.horizontal)
             }
             .sheet(isPresented: $showingSettings){
                 appSettings()
@@ -317,10 +318,10 @@ struct TopContainer: View{
 
 struct DescriptionContainer: View {
     var body: some View {
-        Text("METAR is the weather report that pilots get and is encoded in such a way that some training is necessary to learn to read it. This app will help you understand your local METAR report. Always double-check important info")
+        Text("METAR is the weather report that pilots get and is encoded in such a way that some training is necessary to learn to read it. This app will help you understand your local METAR report. Always double-check important info.")
             .fontWeight(.thin)
-            .padding(.horizontal)
-            .dynamicTypeSize(.medium)
+            
+            .dynamicTypeSize(.small)
             .multilineTextAlignment(.center)
     }
 }

@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct appSettings: View {
-    
+
     var body: some View {
         topContainer()
     }
 }
 
+
 struct topContainer: View {
-    
+    @AppStorage("showExamples") var showExamples = false
+
     //appVersions
     var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -35,7 +37,7 @@ struct topContainer: View {
                 .bold()
         Spacer()
         VStack{
-            Toggle("Placeholder", isOn: $placeholderBool1)
+            Toggle("Show example airports", isOn: $showExamples)
                 .padding()
                 .bold()
                 .dynamicTypeSize(.xxLarge)
