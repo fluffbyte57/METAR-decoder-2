@@ -2,22 +2,20 @@ import SwiftUI
 import Playgrounds
 
 
-//remember add placeholder METARs for user to try out
+//remember add placeholder METARs for user to try out (COMPLETEEEEEEE)
 //keep warning label showing on FALSE during testing because its annoying af
 
 ///helloworlddd2
 ///
 ///
-extension String{
-    static let loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-}
+
 
 @Observable
 class AppState{
     var metarText: String = ""
     var KMIA_METAR: String = "METAR KMIA 202253Z 18003KT 10SM FEW030 FEW200 FEW250 26/22 A2989 RMK AO2 SLP121 T02560222 $"
     var KJFK_METAR: String = "METAR KJFK 202251Z 19005KT 10SM FEW250 13/08 A3028 RMK SLP252 T01280078 $"
-    var KSDF_METAR: String = "METAR KSDF 202256Z 08005KT 10SM FEW300 18/06 A3023 RMK AO2 SLP238 T01830056 $"
+    var KFLL_METAR: String = "METAR KFLL 182053Z 11024G33KT 8SM -RA SCT021 BKN035 OVC110 23/21 A2999 RMK AO2 PK WND 10033/2052 RAB14 SLP156 P0002 60003 T02330206 58004 $"
     var KLAX_METAR: String = "METAR KLAX 202253Z 25009KT 10SM FEW035 FEW080 18/03 A2996 RMK AO2 SLP146 T01780033 $"
     var currentMETAR = decodedMETAR()
 }
@@ -42,7 +40,7 @@ struct decodedMETAR{
 
 
 struct ContentView: View {
-    @State var showingWarningLabel = false
+    @State var showingWarningLabel = true
     @State var appState = AppState()
     
     var body: some View {
@@ -115,6 +113,7 @@ struct MetarField: View {
                 .frame(width: 400 , height: 37)
                 .dynamicTypeSize(.xSmall)
                 .glassEffect(.clear)
+                .padding(.top)
             Button(action: {isTyping = false; currentMETAR = parseMETAR(appState.metarText)}){
                 Text("Convert")
                     .bold()
@@ -174,13 +173,13 @@ struct MetarField: View {
             .padding()
         VStack{
             Button(action: {currentMETAR = parseMETAR(appState.KMIA_METAR);              print(currentMETAR)}){
-               Text("KMIA METAR example")}
+                Text("KMIA METAR example")}
             
             Button(action: {currentMETAR = parseMETAR(appState.KJFK_METAR);              print(currentMETAR)}){
                 Text("KJFK METAR example")
                 }
-            Button(action: {currentMETAR = parseMETAR(appState.KSDF_METAR);              print(currentMETAR)}){
-                Text("KSDF METAR example")
+            Button(action: {currentMETAR = parseMETAR(appState.KFLL_METAR);              print(currentMETAR)}){
+                Text("KFLL METAR example")
                 }
             Button(action: {currentMETAR = parseMETAR(appState.KLAX_METAR);              print(currentMETAR)}){
                 Text("KLAX METAR example")
@@ -318,9 +317,10 @@ struct TopContainer: View{
 
 struct DescriptionContainer: View {
     var body: some View {
-        Text(verbatim: .loremIpsum)
+        Text("METAR is the weather report that pilots get and is encoded in such a way that some training is necessary to learn to read it. This app will help you understand your local METAR report. Always double-check important info")
             .fontWeight(.thin)
-            .dynamicTypeSize(.xLarge)
+            .padding(.horizontal)
+            .dynamicTypeSize(.medium)
             .multilineTextAlignment(.center)
     }
 }
