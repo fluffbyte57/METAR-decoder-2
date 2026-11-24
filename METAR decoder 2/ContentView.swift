@@ -40,21 +40,30 @@ struct decodedMETAR{
 
 
 struct ContentView: View {
+    @AppStorage("accentTheme") var themeName: String = "Blue"
+    
+    var selectedTheme: AccentTheme{
+        AccentTheme(rawValue: themeName) ?? .blue
+    }
+
     @AppStorage("showExamples") var showExamples = false
     @State var showingWarningLabel = false
     @State var appState = AppState()
     
     var body: some View {
-        //appstate.metarText can be used to "inject" the variable
-        TopContainer(appState: appState)
-        DescriptionContainer()
-        
-        //MetarField(appState: appState)
-        newMETARfield()
-        if showExamples == true{
-            exampleField()
-
+        VStack{
+            
+            //appstate.metarText can be used to "inject" the variable
+            TopContainer(appState: appState)
+            DescriptionContainer()
+            
+            //MetarField(appState: appState)
+            newMETARfield()
+            if showExamples == true{
+                exampleField()
         }
+        }
+        .tint(selectedTheme.primaryColor)
         //warningField()
         //Instead of constant warning field, make a popup on app start warning user
         Spacer()
@@ -72,6 +81,7 @@ struct ContentView: View {
                     .dynamicTypeSize(.xxLarge)
                     .padding()
             }
+            
             Button(action: {showingWarningLabel = false}){
                 Text("Accept")
                     .padding()
@@ -91,6 +101,7 @@ struct ContentView: View {
 
 
 struct newMETARfield: View{
+    @AppStorage("accentTheme") var selectedTheme: AccentTheme = .blue
     @Bindable var appState = AppState()
     @FocusState var isTyping: Bool
     @State var currentMETAR = decodedMETAR()
@@ -151,6 +162,7 @@ struct newMETARfield: View{
                 Text("Remarks: \(currentMETAR.remarks)")
 
             }
+            
         }
         .padding(20)
         .frame(width: 350, height: 400)
@@ -158,7 +170,6 @@ struct newMETARfield: View{
         .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
         .shadow(radius: 15)
         .padding(10)
-        
     }
     
 }
@@ -169,16 +180,16 @@ struct exampleField: View {
 
     var body: some View {
         VStack(alignment: .center, spacing: 7){
-            Button(action: {currentMETAR = parseMETAR(appState.KMIA_METAR);              print(currentMETAR)}){
+            Button(action: {currentMETAR = parseMETAR(appState.KMIA_METAR);print(currentMETAR)}){
                 Text("KMIA METAR example")}
             
-            Button(action: {currentMETAR = parseMETAR(appState.KJFK_METAR);              print(currentMETAR)}){
+            Button(action: {currentMETAR = parseMETAR(appState.KJFK_METAR);print(currentMETAR)}){
                 Text("KJFK METAR example")
                 }
-            Button(action: {currentMETAR = parseMETAR(appState.KFLL_METAR);              print(currentMETAR)}){
+            Button(action: {currentMETAR = parseMETAR(appState.KFLL_METAR);print(currentMETAR)}){
                 Text("KFLL METAR example")
                 }
-            Button(action: {currentMETAR = parseMETAR(appState.KLAX_METAR);              print(currentMETAR)}){
+            Button(action: {currentMETAR = parseMETAR(appState.KLAX_METAR);print(currentMETAR)}){
                 Text("KLAX METAR example")
                 }
        }
@@ -323,7 +334,9 @@ struct DescriptionContainer: View {
             
             .dynamicTypeSize(.small)
             .multilineTextAlignment(.center)
+        
     }
+    
 }
 
 
@@ -332,3 +345,6 @@ struct DescriptionContainer: View {
     ContentView()
 }
 
+///hello world texttest??
+///why bdont it workkkk
+///bruhhhh whatever
