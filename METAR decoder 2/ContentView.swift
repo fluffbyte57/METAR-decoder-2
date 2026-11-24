@@ -82,7 +82,9 @@ struct ContentView: View {
                     .padding()
             }
             
-            Button(action: {showingWarningLabel = false}){
+            ///REMEMBER TO CHANGE BEFORE COMMITING
+            
+            Button(action: {showingWarningLabel = true}){
                 Text("Accept")
                     .padding()
                     .frame(width: 100, height: 50)
