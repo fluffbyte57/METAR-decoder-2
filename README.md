@@ -11,10 +11,10 @@ _Available Features:_
 🛠️WORK IN PROGRESS🛠️
 
 - [ ] Settings Menu
-- [ ] Nicer UI
-- [ ] Tints for customizability
+- [x] Nicer UI
+- [x] Tints for customizability
 
 
-<img width="301" height="757" alt="ContentView2" src="https://github.com/user-attachments/assets/86122fc3-43f3-452d-b4ce-f472163c4a2d" />
+<img width="301" height="650" alt="ContentView2" src="https://github.com/user-attachments/assets/86122fc3-43f3-452d-b4ce-f472163c4a2d" />
 
-<img width="301" height="757" alt="ContentView" src="https://github.com/user-attachments/assets/c8167b22-5eb7-4f33-adec-99a1a84f4e8d" />
+<img width="301" height="650" alt="ContentView" src="https://github.com/user-attachments/assets/c8167b22-5eb7-4f33-adec-99a1a84f4e8d" />
